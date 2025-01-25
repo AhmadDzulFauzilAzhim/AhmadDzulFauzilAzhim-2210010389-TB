@@ -74,4 +74,4 @@ File ini digunakan untuk mengelola data pengajuan cuti pegawai, termasuk ID peng
 
   ## Demo
 
-  
+  ![App Screenshot](https://github.com/AhmadDzulFauzilAzhim/AhmadDzulFauzilAzhim-2210010389-TB/blob/main/img/demo%20aplikasi%20kepegawaian.gif)
