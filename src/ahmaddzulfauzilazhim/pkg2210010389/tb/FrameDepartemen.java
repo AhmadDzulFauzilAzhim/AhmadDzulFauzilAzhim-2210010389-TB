@@ -8,13 +8,54 @@ package ahmaddzulfauzilazhim.pkg2210010389.tb;
  *
  * @author Ahmad Dzul Fauzil Azhim
  */
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.sql.*;
+import java.io.FileWriter;
 public class FrameDepartemen extends javax.swing.JFrame {
-
+     private DefaultTableModel modelTabel;
     /**
      * Creates new form FrameDepartemen
      */
     public FrameDepartemen() {
         initComponents();
+        this.setLocationRelativeTo(null);  // Mengatur posisi frame di tengah layar
+        
+        modelTabel = new DefaultTableModel( // Membuat model tabel dengan kolom-kolom 
+            new String[]{"ID", "Nama Departemen", "Kode Departemen", "Deskripsi"}, 0
+        );
+        tabeldepartemen.setModel(modelTabel);
+        
+        tabeldepartemen.getSelectionModel().addListSelectionListener(e -> { // Menambahkan listener untuk memilih baris pada tabel
+            int baris = tabeldepartemen.getSelectedRow();
+            if (baris != -1) {
+                txtiddepartemen.setText(modelTabel.getValueAt(baris, 0).toString());
+                txtnamadepartemen.setText(modelTabel.getValueAt(baris, 1).toString());
+                txtkodedepartemen.setText(modelTabel.getValueAt(baris, 2).toString());
+                txtdeskripsi.setText(modelTabel.getValueAt(baris, 3).toString());
+            }
+        });
+         muatData();
+    }
+
+      private void muatData() {
+        try (Connection kon = KoneksiDatabase.sambungkan();
+             Statement st = kon.createStatement();
+             ResultSet rs = st.executeQuery("SELECT * FROM departemen")) {
+             // Mengisi tabel dengan data dari database
+            while (rs.next()) {
+                Object[] data = {
+                    rs.getInt("id_departemen"),
+                    rs.getString("nama_departemen"),
+                    rs.getString("kode_departemen"),
+                    rs.getString("deskripsi")
+                };
+                modelTabel.addRow(data);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal Muat Data: " + ex.getMessage());
+        }
     }
 
     /**
@@ -30,10 +71,17 @@ public class FrameDepartemen extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
+        txtiddepartemen = new javax.swing.JTextField();
+        txtnamadepartemen = new javax.swing.JTextField();
+        txtkodedepartemen = new javax.swing.JTextField();
+        txtdeskripsi = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabeldepartemen = new javax.swing.JTable();
+        btnsimpan = new javax.swing.JButton();
+        btnubah = new javax.swing.JButton();
+        btnhapus = new javax.swing.JButton();
+        btnbersihkan = new javax.swing.JButton();
+        btncetak = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -49,13 +97,58 @@ public class FrameDepartemen extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel4.setText("Deskripsi:");
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtiddepartemen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtnamadepartemen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        jTextField4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtkodedepartemen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        jTextField5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtdeskripsi.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        tabeldepartemen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tabeldepartemen);
+
+        btnsimpan.setText("Simpan");
+        btnsimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnsimpanActionPerformed(evt);
+            }
+        });
+
+        btnubah.setText("Ubah");
+        btnubah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnubahActionPerformed(evt);
+            }
+        });
+
+        btnhapus.setText("Hapus");
+        btnhapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnhapusActionPerformed(evt);
+            }
+        });
+
+        btnbersihkan.setText("Bersihkan");
+        btnbersihkan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbersihkanActionPerformed(evt);
+            }
+        });
+
+        btncetak.setText("Cetak CSV");
+        btncetak.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncetakActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -67,20 +160,36 @@ public class FrameDepartemen extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1))
+                        .addComponent(txtiddepartemen))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
+                        .addComponent(txtdeskripsi, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
+                        .addComponent(txtnamadepartemen, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)))
+                        .addComponent(txtkodedepartemen, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(btnsimpan)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnubah)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnhapus)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnbersihkan)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btncetak)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -88,24 +197,117 @@ public class FrameDepartemen extends javax.swing.JFrame {
                 .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtiddepartemen, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnamadepartemen, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtkodedepartemen, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(376, Short.MAX_VALUE))
+                    .addComponent(txtdeskripsi, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnsimpan)
+                    .addComponent(btnubah)
+                    .addComponent(btnhapus)
+                    .addComponent(btnbersihkan)
+                    .addComponent(btncetak))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnsimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsimpanActionPerformed
+        try (Connection kon = KoneksiDatabase.sambungkan()) {
+            String sql = "INSERT INTO departemen (nama_departemen, kode_departemen, deskripsi) VALUES (?, ?, ?)";
+            PreparedStatement ps = kon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, txtnamadepartemen.getText());
+            ps.setString(2, txtkodedepartemen.getText());
+            ps.setString(3, txtdeskripsi.getText());
+            ps.executeUpdate();
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                Object[] data = {
+                    rs.getInt(1), 
+                    txtnamadepartemen.getText(), 
+                    txtkodedepartemen.getText(), 
+                    txtdeskripsi.getText()
+                };
+                modelTabel.addRow(data);
+            }
+            btnbersihkanActionPerformed(null);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal Simpan: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnsimpanActionPerformed
+
+    private void btnubahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnubahActionPerformed
+        try (Connection kon = KoneksiDatabase.sambungkan()) {
+            String sql = "UPDATE departemen SET nama_departemen=?, kode_departemen=?, deskripsi=? WHERE id_departemen=?";
+            PreparedStatement ps = kon.prepareStatement(sql);
+            ps.setString(1, txtnamadepartemen.getText());
+            ps.setString(2, txtkodedepartemen.getText());
+            ps.setString(3, txtdeskripsi.getText());
+            ps.setInt(4, Integer.parseInt(txtiddepartemen.getText()));
+            ps.executeUpdate();
+
+            int baris = tabeldepartemen.getSelectedRow();
+            modelTabel.setValueAt(txtnamadepartemen.getText(), baris, 1);
+            modelTabel.setValueAt(txtkodedepartemen.getText(), baris, 2);
+            modelTabel.setValueAt(txtdeskripsi.getText(), baris, 3);
+            btnbersihkanActionPerformed(null);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal Ubah: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnubahActionPerformed
+
+    private void btnhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnhapusActionPerformed
+         try (Connection kon = KoneksiDatabase.sambungkan()) {
+            String sql = "DELETE FROM departemen WHERE id_departemen=?";
+            PreparedStatement ps = kon.prepareStatement(sql);
+            ps.setInt(1, Integer.parseInt(txtiddepartemen.getText()));
+            ps.executeUpdate();
+
+            int baris = tabeldepartemen.getSelectedRow();
+            modelTabel.removeRow(baris);
+            btnbersihkanActionPerformed(null);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal Hapus: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnhapusActionPerformed
+
+    private void btnbersihkanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbersihkanActionPerformed
+        txtiddepartemen.setText("");
+        txtnamadepartemen.setText("");
+        txtkodedepartemen.setText("");
+        txtdeskripsi.setText("");
+        tabeldepartemen.clearSelection();
+    }//GEN-LAST:event_btnbersihkanActionPerformed
+
+    private void btncetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncetakActionPerformed
+       try (FileWriter csv = new FileWriter("departemen.csv")) {
+            csv.append("ID,Nama Departemen,Kode Departemen,Deskripsi\n");
+            for (int i = 0; i < modelTabel.getRowCount(); i++) {
+                for (int j = 0; j < modelTabel.getColumnCount(); j++) {
+                    csv.append(modelTabel.getValueAt(i, j).toString());
+                    if (j < modelTabel.getColumnCount() - 1) csv.append(",");
+                }
+                csv.append("\n");
+            }
+            JOptionPane.showMessageDialog(this, "CSV Berhasil Dibuat");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal Buat CSV: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btncetakActionPerformed
 
     /**
      * @param args the command line arguments
@@ -143,13 +345,20 @@ public class FrameDepartemen extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnbersihkan;
+    private javax.swing.JButton btncetak;
+    private javax.swing.JButton btnhapus;
+    private javax.swing.JButton btnsimpan;
+    private javax.swing.JButton btnubah;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tabeldepartemen;
+    private javax.swing.JTextField txtdeskripsi;
+    private javax.swing.JTextField txtiddepartemen;
+    private javax.swing.JTextField txtkodedepartemen;
+    private javax.swing.JTextField txtnamadepartemen;
     // End of variables declaration//GEN-END:variables
 }
