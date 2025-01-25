@@ -1,2 +1,5 @@
 ID,NIP,Nama,Departemen,Jabatan,Email,Telepon,Tanggal Masuk,Status
-1,002,114342432,Pt Ahmad,Direktur,Atasan,Ahmad@gmail.com,2025-01-01,Aktif
+2,1145324,Ahmad Dzul Fauzil Azhim,PT Ahmad Dzul,Direktur,Ahmad@gmail.com,081212345678,2025-01-01,Aktif
+3,1131213,Fauzil Azhim,PT Fauzil Azhim,Manager,Fauzil@gmail.com,081324343321,2025-01-15,Cuti
+5,113213123,Borneo,PT Ahmad Dzul,Staff,borneo@gmail.com,08313213535,2025-01-04,Aktif
+7,11323445,Leon,PT Yani,Supervisor,leon@gmail.com,0851266536,2013-01-10,Cuti

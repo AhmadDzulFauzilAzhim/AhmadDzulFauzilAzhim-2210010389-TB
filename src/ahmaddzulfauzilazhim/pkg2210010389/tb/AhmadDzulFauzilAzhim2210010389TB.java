@@ -14,7 +14,7 @@ public class AhmadDzulFauzilAzhim2210010389TB {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new FormDepartemen().setVisible(true);
+        new HalamanUtama().setVisible(true);
     }
     
 }
